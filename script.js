@@ -4,18 +4,21 @@ const reposList = document.querySelector('.repos-list')
 const debounceFetchRepo = debounce(fetchRepo, 425)
 
 search.addEventListener('input', function () {
-    if (!search.value) return
-    debounceFetchRepo(search.value)
-})
-
-search.addEventListener('click', function () {
     debounceFetchRepo(search.value)
 })
 
 function fetchRepo(repoName) {
+    if (!repoName) return renderResults([])
     fetch(`https://api.github.com/search/repositories?q=${repoName}+in:name`)
         .then(response => response.json())
-        .then(repos => renderResults(repos.items))
+        .then(repos => {
+            const favReposId = Array.from(reposList.children).map(item => item.repoId)
+            const filtredRepos = repos.items.filter(item => {
+                for (repoId of favReposId) if (item.id === repoId) return
+                return item
+            })
+            return renderResults(filtredRepos)
+        })
 }
 
 function renderResults(repos) {
@@ -29,8 +32,11 @@ function renderResults(repos) {
         const resultItem = document.createElement('li')
         resultItem.className = 'result-item'
         resultItem.textContent = repo.name
+        
+        resultItem.repoId = repo.id
         resultItem.owner = repo.owner.login
         resultItem.stars = repo.stargazers_count
+
         resultList.insertAdjacentElement('afterbegin', resultItem)
     }
 
@@ -41,7 +47,20 @@ function renderResults(repos) {
 }
 
 function addToFavoriteRepo(repo) {
-    console.log(repo)
+    const img = document.createElement('img')
+    img.className = 'close-btn'
+    img.src = 'img/close.svg'
+    img.alt = ''
+
+    repo.className = 'favorite-repo'
+    repo.innerHTML = `Name: ${repo.textContent}<br>Owner: ${repo.owner}<br>Stars: ${repo.stars}`
+
+    repo.insertAdjacentElement('beforeend', img)
+    reposList.insertAdjacentElement('beforeend', repo)
+
+    img.addEventListener('click', function () {
+        repo.remove()
+    })
 }
 
 function debounce(fn, debounceTime) {

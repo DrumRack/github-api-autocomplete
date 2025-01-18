@@ -15,6 +15,11 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
+
+}
+
+.container {
+    position: relative;
 }
 
 .search {
@@ -28,6 +33,7 @@ main {
 
 .result-list {
     list-style: none;
+    position: absolute;
 }
 
 .result-item {
@@ -49,6 +55,29 @@ main {
     background: #65CDF9;
 }
 
+.repos-list {
+    list-style: none;
+    width: 504px;
+    margin-top: 265px;
+}
+
 .favorite-repo {
+    position: relative;
     background: #E27BEB;
+    height: 100px;
+    padding: 8px 16px;
+    font-size: 24px;
+    border: 1px solid black;
+    border-bottom: none;
+}
+
+.favorite-repo:last-child {
+    border: 1px solid black;
+}
+
+.close-btn {
+    position: absolute;
+    top: 30px;
+    right: 34px;
+    cursor: pointer;
 }
